@@ -7,6 +7,8 @@ export class HUDScene extends Phaser.Scene {
   }
 
   create() {
+    this.gameEvents = this.scene.get('Game').events;
+
     // Score
     this.scoreText = this.add.text(16, 16, 'Score: 0', {
       fontFamily: 'monospace',
@@ -72,19 +74,18 @@ export class HUDScene extends Phaser.Scene {
     this.bossBarFill.setVisible(false);
 
     // Listen for events from GameScene
-    const gameScene = this.scene.get('Game');
-    gameScene.events.on('updateScore', this.updateScore, this);
-    gameScene.events.on('updateLives', this.updateLives, this);
-    gameScene.events.on('updateWave', this.updateWave, this);
-    gameScene.events.on('updateStage', this.updateStage, this);
-    gameScene.events.on('updateWeapon', this.updateWeapon, this);
-    gameScene.events.on('announceWave', this.announceWave, this);
-    gameScene.events.on('announceBoss', this.announceBoss, this);
-    gameScene.events.on('scorePop', this.scorePop, this);
-    gameScene.events.on('showBossHP', this.showBossHP, this);
-    gameScene.events.on('hideBossHP', this.hideBossHP, this);
-    gameScene.events.on('updateBossHP', this.updateBossHP, this);
-    gameScene.events.on('shutdown', this.cleanup, this);
+    this.gameEvents.on('updateScore', this.updateScore, this);
+    this.gameEvents.on('updateLives', this.updateLives, this);
+    this.gameEvents.on('updateWave', this.updateWave, this);
+    this.gameEvents.on('updateStage', this.updateStage, this);
+    this.gameEvents.on('updateWeapon', this.updateWeapon, this);
+    this.gameEvents.on('announceWave', this.announceWave, this);
+    this.gameEvents.on('announceBoss', this.announceBoss, this);
+    this.gameEvents.on('scorePop', this.scorePop, this);
+    this.gameEvents.on('showBossHP', this.showBossHP, this);
+    this.gameEvents.on('hideBossHP', this.hideBossHP, this);
+    this.gameEvents.on('updateBossHP', this.updateBossHP, this);
+    this.gameEvents.once('shutdown', this.cleanup, this);
   }
 
   updateScore(score) {
@@ -201,15 +202,19 @@ export class HUDScene extends Phaser.Scene {
   }
 
   cleanup() {
-    const gameScene = this.scene.get('Game');
-    const events = [
-      'updateScore', 'updateLives', 'updateWave', 'updateStage',
-      'updateWeapon', 'announceWave', 'announceBoss', 'scorePop',
-      'showBossHP', 'hideBossHP', 'updateBossHP',
-    ];
-    for (const evt of events) {
-      gameScene.events.off(evt, this[evt], this);
-    }
+    if (!this.gameEvents) return;
+    this.gameEvents.off('updateScore', this.updateScore, this);
+    this.gameEvents.off('updateLives', this.updateLives, this);
+    this.gameEvents.off('updateWave', this.updateWave, this);
+    this.gameEvents.off('updateStage', this.updateStage, this);
+    this.gameEvents.off('updateWeapon', this.updateWeapon, this);
+    this.gameEvents.off('announceWave', this.announceWave, this);
+    this.gameEvents.off('announceBoss', this.announceBoss, this);
+    this.gameEvents.off('scorePop', this.scorePop, this);
+    this.gameEvents.off('showBossHP', this.showBossHP, this);
+    this.gameEvents.off('hideBossHP', this.hideBossHP, this);
+    this.gameEvents.off('updateBossHP', this.updateBossHP, this);
+    this.gameEvents = null;
     this.scene.stop('HUD');
   }
 }

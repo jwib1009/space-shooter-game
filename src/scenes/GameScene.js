@@ -240,6 +240,7 @@ export class GameScene extends Phaser.Scene {
 
   bossRayHitPlayer(rayHitbox, player) {
     if (!this.player.alive) return;
+    if (!this.boss?.canDamageWithRay(this.time.now)) return;
     this.handlePlayerHit();
   }
 
@@ -282,6 +283,7 @@ export class GameScene extends Phaser.Scene {
   handlePlayerHit() {
     const dead = this.player.hit();
     if (dead) {
+      const isNewHighScore = ScoreManager.isHighScore(this.scoreManager.getScore());
       // Screen shake on death
       this.cameras.main.shake(300, 0.015);
       this.time.delayedCall(1500, () => {
@@ -289,6 +291,7 @@ export class GameScene extends Phaser.Scene {
         this.scene.start('GameOver', {
           score: this.scoreManager.getScore(),
           stage: this.waveManager.getCurrentStage() + 1,
+          isNewHighScore,
         });
       });
     }
@@ -412,6 +415,7 @@ export class GameScene extends Phaser.Scene {
   showVictory() {
     this.cleanupBoss();
 
+    const isNewHighScore = ScoreManager.isHighScore(this.scoreManager.getScore());
     ScoreManager.saveHighScore(this.scoreManager.getScore());
 
     const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.6);
@@ -454,6 +458,7 @@ export class GameScene extends Phaser.Scene {
           score: this.scoreManager.getScore(),
           stage: STAGES.length,
           victory: true,
+          isNewHighScore,
         });
       });
     });

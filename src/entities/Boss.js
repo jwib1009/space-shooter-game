@@ -26,6 +26,7 @@ export class Boss {
     this.lastFired = 0;
     this.lastRayTime = 0;
     this.rayActive = false;
+    this.lastRayDamageTime = 0;
     this.moveDir = 1;
 
     // Boss sprite in a physics group (proven pattern)
@@ -181,6 +182,7 @@ export class Boss {
 
   fireRays() {
     this.rayActive = true;
+    this.lastRayDamageTime = 0;
     this.raySprite.setVisible(true);
     this.raySprite.setPosition(this.sprite.x, this.sprite.y + 200);
     this.raySprite.setAlpha(0);
@@ -304,6 +306,13 @@ export class Boss {
 
   getHPPercent() {
     return this.hp / this.maxHP;
+  }
+
+  canDamageWithRay(time, cooldown = 250) {
+    if (!this.rayActive) return false;
+    if (time < this.lastRayDamageTime + cooldown) return false;
+    this.lastRayDamageTime = time;
+    return true;
   }
 
   destroy() {

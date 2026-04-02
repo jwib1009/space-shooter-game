@@ -68,6 +68,9 @@ export class AsteroidManager {
       if (asteroid.active && asteroid.y > 780) {
         this.group.killAndHide(asteroid);
         asteroid.body.enable = false;
+        if (this.scene.waveManager) {
+          this.scene.waveManager.onAsteroidResolved();
+        }
       }
     });
   }
@@ -110,6 +113,9 @@ export class AsteroidManager {
         this.group.killAndHide(asteroid);
         asteroid.body.enable = false;
         asteroid._pendingKill = false;
+        if (this.scene.waveManager) {
+          this.scene.waveManager.onAsteroidResolved();
+        }
         if (wasLarge) {
           this.spawnSmall(x - 15, y);
           this.spawnSmall(x + 15, y);
@@ -119,6 +125,9 @@ export class AsteroidManager {
       this.group.killAndHide(asteroid);
       asteroid.body.enable = false;
       asteroid._pendingKill = false;
+      if (this.scene.waveManager) {
+        this.scene.waveManager.onAsteroidResolved();
+      }
       if (wasLarge) {
         this.spawnSmall(x - 15, y);
         this.spawnSmall(x + 15, y);

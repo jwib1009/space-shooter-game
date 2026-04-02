@@ -29,6 +29,9 @@ export class ScoreManager {
   }
 
   static saveHighScore(score) {
+    if (!ScoreManager.isHighScore(score) || score <= 0) {
+      return ScoreManager.getHighScores();
+    }
     const scores = ScoreManager.getHighScores();
     scores.push({ score, date: Date.now() });
     scores.sort((a, b) => b.score - a.score);
@@ -42,6 +45,7 @@ export class ScoreManager {
   }
 
   static isHighScore(score) {
+    if (score <= 0) return false;
     const scores = ScoreManager.getHighScores();
     if (scores.length < MAX_SCORES) return true;
     return score > scores[scores.length - 1].score;

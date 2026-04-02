@@ -11,6 +11,7 @@ export class GameOverScene extends Phaser.Scene {
     this.finalScore = data.score || 0;
     this.stageReached = data.stage || 1;
     this.victory = data.victory || false;
+    this.isNewHighScore = data.isNewHighScore || false;
   }
 
   create() {
@@ -43,8 +44,7 @@ export class GameOverScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Check if new high score
-    const isNew = ScoreManager.isHighScore(this.finalScore);
-    if (isNew && this.finalScore > 0) {
+    if (this.isNewHighScore) {
       const newHSText = this.add.text(GAME_WIDTH / 2, 220, 'NEW HIGH SCORE!', {
         fontFamily: 'monospace',
         fontSize: '20px',

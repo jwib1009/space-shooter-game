@@ -13,6 +13,7 @@ export class WaveManager {
     this.state = STATE.WAITING;
     this.spawnQueue = [];
     this.enemiesAlive = 0;
+    this.asteroidsAlive = 0;
     this.events = new Phaser.Events.EventEmitter();
   }
 
@@ -20,6 +21,8 @@ export class WaveManager {
     this.currentStage = 0;
     this.currentWaveInStage = 0;
     this.globalWave = 0;
+    this.enemiesAlive = 0;
+    this.asteroidsAlive = 0;
     this.events.emit('stageStart', this.currentStage);
     this.startWave();
   }
@@ -145,6 +148,7 @@ export class WaveManager {
   }
 
   spawnAsteroids(count) {
+    this.asteroidsAlive = count;
     for (let i = 0; i < count; i++) {
       this.scene.time.delayedCall(1000 + i * 2000, () => {
         this.scene.asteroidManager.spawnLarge();
@@ -154,7 +158,14 @@ export class WaveManager {
 
   onEnemyKilled() {
     this.enemiesAlive = Math.max(0, this.enemiesAlive - 1);
-    if (this.state === STATE.ACTIVE && this.enemiesAlive <= 0) {
+    if (this.state === STATE.ACTIVE && this.enemiesAlive <= 0 && this.asteroidsAlive <= 0) {
+      this.waveCleared();
+    }
+  }
+
+  onAsteroidResolved() {
+    this.asteroidsAlive = Math.max(0, this.asteroidsAlive - 1);
+    if (this.state === STATE.ACTIVE && this.enemiesAlive <= 0 && this.asteroidsAlive <= 0) {
       this.waveCleared();
     }
   }
