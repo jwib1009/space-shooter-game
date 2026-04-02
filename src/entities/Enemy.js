@@ -27,6 +27,7 @@ export class EnemyManager {
     enemy.setActive(true).setVisible(true);
     enemy.body.enable = true;
     enemy._pendingKill = false;
+    enemy.clearTint();
     enemy.setScale(PIXEL_SCALE);
     enemy.setAngle(typeConfig.angle || -90);
     enemy.setDepth(5);

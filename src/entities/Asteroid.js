@@ -21,6 +21,8 @@ export class AsteroidManager {
 
     asteroid.setActive(true).setVisible(true);
     asteroid.body.enable = true;
+    asteroid._pendingKill = false;
+    asteroid.clearTint();
     asteroid.setScale(PIXEL_SCALE);
     asteroid.setDepth(4);
 
@@ -43,6 +45,8 @@ export class AsteroidManager {
 
     asteroid.setActive(true).setVisible(true);
     asteroid.body.enable = true;
+    asteroid._pendingKill = false;
+    asteroid.clearTint();
     asteroid.setScale(PIXEL_SCALE);
     asteroid.setDepth(4);
 

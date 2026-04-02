@@ -70,6 +70,11 @@ export class BootScene extends Phaser.Scene {
     this.load.image('explosion4', 'assets/explosions/explosion4.png');
     this.load.image('explosion5', 'assets/explosions/explosion5.png');
 
+    // ── Large Explosions (boss death) ──
+    for (let i = 1; i <= 9; i++) {
+      this.load.image(`big-explosion${i}`, `assets/explosions-large/explosion-animation${i}.png`);
+    }
+
     // ── Hit FX ──
     this.load.image('hit1', 'assets/hit/hit1.png');
     this.load.image('hit2', 'assets/hit/hit2.png');
@@ -91,10 +96,36 @@ export class BootScene extends Phaser.Scene {
       frameHeight: 47,
     });
 
-    // ── Backgrounds ──
+    // ── Backgrounds — Stage 1 ──
     this.load.image('bg-back', 'assets/backgrounds/bg-back.png');
     this.load.image('bg-stars', 'assets/backgrounds/bg-stars.png');
     this.load.image('bg-planet', 'assets/backgrounds/bg-planet.png');
+
+    // ── Backgrounds — Stage 2 ──
+    this.load.image('bg-back-s2', 'assets/backgrounds-stage2/blue-back.png');
+    this.load.image('bg-stars-s2', 'assets/backgrounds-stage2/blue-stars.png');
+
+    // ── Backgrounds — Stage 3 ──
+    this.load.image('bg-back-s3', 'assets/backgrounds-stage3/parallax-space-backgound.png');
+    this.load.image('bg-stars-s3', 'assets/backgrounds-stage3/parallax-space-stars.png');
+
+    // ── Boss sprites ──
+    this.load.spritesheet('boss-body', 'assets/boss/boss.png', {
+      frameWidth: 192,
+      frameHeight: 144,
+    });
+    this.load.spritesheet('boss-thrust', 'assets/boss/boss-thrust.png', {
+      frameWidth: 64,
+      frameHeight: 48,
+    });
+    this.load.image('boss-bolt', 'assets/boss/bolt.png');
+    this.load.spritesheet('boss-rays', 'assets/boss/rays.png', {
+      frameWidth: 64,
+      frameHeight: 224,
+    });
+    this.load.image('boss-cannon-left', 'assets/boss/cannon-left.png');
+    this.load.image('boss-cannon-right', 'assets/boss/cannon-right.png');
+    this.load.image('boss-helmet', 'assets/boss/helmet.png');
 
     // ── Sounds ──
     this.load.audio('sfx-explosion', 'assets/sounds/explosion.wav');
@@ -123,6 +154,17 @@ export class BootScene extends Phaser.Scene {
     });
 
     this.anims.create({
+      key: 'big-explosion',
+      frames: [
+        { key: 'big-explosion1' }, { key: 'big-explosion2' }, { key: 'big-explosion3' },
+        { key: 'big-explosion4' }, { key: 'big-explosion5' }, { key: 'big-explosion6' },
+        { key: 'big-explosion7' }, { key: 'big-explosion8' }, { key: 'big-explosion9' },
+      ],
+      frameRate: 14,
+      repeat: 0,
+    });
+
+    this.anims.create({
       key: 'hit-fx',
       frames: [{ key: 'hit1' }, { key: 'hit2' }, { key: 'hit3' }, { key: 'hit4' }],
       frameRate: 16,
@@ -147,6 +189,28 @@ export class BootScene extends Phaser.Scene {
       key: 'shield-anim',
       frames: this.anims.generateFrameNumbers('energy-shield', { start: 0, end: 7 }),
       frameRate: 10,
+      repeat: -1,
+    });
+
+    // Boss animations
+    this.anims.create({
+      key: 'boss-idle',
+      frames: this.anims.generateFrameNumbers('boss-body', { start: 0, end: 4 }),
+      frameRate: 6,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: 'boss-thrust-anim',
+      frames: this.anims.generateFrameNumbers('boss-thrust', { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: 'boss-rays-anim',
+      frames: this.anims.generateFrameNumbers('boss-rays', { start: 0, end: 10 }),
+      frameRate: 12,
       repeat: -1,
     });
 

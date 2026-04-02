@@ -35,18 +35,19 @@ export class PowerUpManager {
     powerup.powerType = type;
     powerup.spawnTime = this.scene.time.now;
     powerup.baseY = y;
-
-    powerup.setVelocityY(60);
+    powerup.floatSpeed = 60;
   }
 
   update(time) {
     this.group.getChildren().forEach((p) => {
       if (!p.active) return;
 
-      // Bob up and down while drifting with velocity
+      // Derive pickup motion from spawn time so the drift stays stable.
       const elapsed = time - p.spawnTime;
-      p.baseY += p.body.velocity.y * (1 / 60);
-      p.y = p.baseY + Math.sin(elapsed * 0.005) * 2;
+      const driftY = (elapsed / 1000) * p.floatSpeed;
+      const bobOffset = Math.sin(elapsed * 0.005) * 8;
+      p.y = p.baseY + driftY + bobOffset;
+      p.body.updateFromGameObject();
 
       // Off-screen cleanup
       if (p.y > 780) {

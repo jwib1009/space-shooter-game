@@ -2,9 +2,10 @@ import Phaser from 'phaser';
 import {
   GAME_WIDTH, GAME_HEIGHT,
   BG_SPEED_BACK, BG_SPEED_STARS,
-  ENEMY_TYPES, PIXEL_SCALE, EXTRA_LIFE_SCORE,
+  PIXEL_SCALE, EXTRA_LIFE_SCORE, STAGES,
 } from '../config/constants.js';
 import { Player } from '../entities/Player.js';
+import { Boss } from '../entities/Boss.js';
 import { EnemyManager } from '../entities/Enemy.js';
 import { AsteroidManager } from '../entities/Asteroid.js';
 import { PowerUpManager } from '../entities/PowerUp.js';
@@ -16,13 +17,17 @@ export class GameScene extends Phaser.Scene {
     super('Game');
   }
 
+  init(data) {
+    this.shipTint = data?.ship || null; // color tint for selected ship
+  }
+
   create() {
     // Parallax background
-    const bgScale = GAME_WIDTH / 272;
+    this.bgScale = GAME_WIDTH / 272;
     this.bgBack = this.add.tileSprite(0, 0, GAME_WIDTH, GAME_HEIGHT, 'bg-back')
-      .setOrigin(0, 0).setScale(bgScale).setDepth(0);
+      .setOrigin(0, 0).setScale(this.bgScale).setDepth(0);
     this.bgStars = this.add.tileSprite(0, 0, GAME_WIDTH, GAME_HEIGHT, 'bg-stars')
-      .setOrigin(0, 0).setScale(bgScale).setDepth(1);
+      .setOrigin(0, 0).setScale(this.bgScale).setDepth(1);
 
     // Systems
     this.scoreManager = new ScoreManager();
@@ -34,8 +39,12 @@ export class GameScene extends Phaser.Scene {
     // Queue for deferred body operations (applied after physics step)
     this.postPhysicsQueue = [];
 
+    // Boss reference
+    this.boss = null;
+
     // Player
     this.player = new Player(this);
+    if (this.shipTint) this.player.setTint(this.shipTint);
 
     // Track extra lives awarded
     this.nextLifeAt = EXTRA_LIFE_SCORE;
@@ -49,6 +58,30 @@ export class GameScene extends Phaser.Scene {
       this.events.emit('announceWave', wave);
     });
 
+    this.waveManager.events.on('stageStart', (stage) => {
+      this.events.emit('updateStage', stage + 1);
+    });
+
+    this.waveManager.events.on('bossStart', (stage) => {
+      this.spawnBoss(stage);
+    });
+
+    this.waveManager.events.on('stageClear', (clearedStage) => {
+      this.showStageClear(clearedStage);
+    });
+
+    this.waveManager.events.on('victory', () => {
+      this.showVictory();
+    });
+
+    this.events.on('bossDefeated', () => {
+      const stageConfig = STAGES[this.waveManager.getCurrentStage()];
+      if (stageConfig) {
+        this.addScore(stageConfig.clearBonus, GAME_WIDTH / 2, GAME_HEIGHT / 2);
+      }
+      this.waveManager.onBossDefeated();
+    });
+
     // Set up collisions
     this.setupCollisions();
 
@@ -56,7 +89,6 @@ export class GameScene extends Phaser.Scene {
     this.physics.world.on('worldstep', () => {
       for (const fn of this.postPhysicsQueue) fn();
       this.postPhysicsQueue.length = 0;
-      // Safety: ensure player body is never disabled by deferred kills
       if (this.player.alive && !this.player.body.enable) {
         this.player.body.enable = true;
       }
@@ -122,8 +154,38 @@ export class GameScene extends Phaser.Scene {
     );
   }
 
-  // Helper: mark a sprite as pending kill so overlap won't re-trigger,
-  // but defer the actual body disable to after the physics step.
+  setupBossCollisions() {
+    if (!this.boss) return;
+
+    // Player bullets hit boss (group-to-group — proven pattern)
+    this.bossOverlap = this.physics.add.overlap(
+      this.player.bullets,
+      this.boss.group,
+      this.bulletHitBoss,
+      null,
+      this
+    );
+
+    // Boss bullets hit player
+    this.bossBulletOverlap = this.physics.add.overlap(
+      this.boss.bullets,
+      this.player,
+      this.bossBulletHitPlayer,
+      null,
+      this
+    );
+
+    // Boss ray hits player
+    this.bossRayOverlap = this.physics.add.overlap(
+      this.boss.rayHitbox,
+      this.player,
+      this.bossRayHitPlayer,
+      null,
+      this
+    );
+  }
+
+  // Helper: mark a sprite as pending kill
   deferKill(sprite, group) {
     if (sprite._pendingKill) return;
     sprite._pendingKill = true;
@@ -137,21 +199,48 @@ export class GameScene extends Phaser.Scene {
   bulletHitEnemy(bullet, enemy) {
     if (!bullet.active || bullet._pendingKill || !enemy.active || enemy._pendingKill) return;
 
-    // Piercing bullets pass through; non-piercing are destroyed
     if (!bullet.piercing) {
       this.deferKill(bullet, this.player.bullets);
     }
 
-    // Hit FX
     this.spawnHitFX(bullet.x, bullet.y);
 
-    // Damage enemy
     const score = this.enemyManager.damageEnemy(enemy);
     if (score > 0) {
       this.addScore(score, enemy.x, enemy.y);
-      // Drop power-up chance
       this.powerUpManager.tryDrop(enemy.x, enemy.y);
     }
+  }
+
+  bulletHitBoss(bullet, boss) {
+    if (!bullet.active || bullet._pendingKill || !this.boss || !this.boss.alive) return;
+
+    if (!bullet.piercing) {
+      this.deferKill(bullet, this.player.bullets);
+    }
+
+    this.spawnHitFX(bullet.x, bullet.y);
+
+    const score = this.boss.takeDamage(1);
+    if (score > 0) {
+      this.addScore(score, this.boss.x, this.boss.y);
+    }
+
+    // Update boss HP on HUD
+    this.events.emit('updateBossHP', this.boss.getHPPercent());
+  }
+
+  bossBulletHitPlayer(bullet, player) {
+    if (!bullet.active || !this.player.alive) return;
+
+    this.boss.bullets.killAndHide(bullet);
+    bullet.body.enable = false;
+    this.handlePlayerHit();
+  }
+
+  bossRayHitPlayer(rayHitbox, player) {
+    if (!this.player.alive) return;
+    this.handlePlayerHit();
   }
 
   bulletHitAsteroid(bullet, asteroid) {
@@ -193,9 +282,14 @@ export class GameScene extends Phaser.Scene {
   handlePlayerHit() {
     const dead = this.player.hit();
     if (dead) {
-      // All lives lost — game over
+      // Screen shake on death
+      this.cameras.main.shake(300, 0.015);
       this.time.delayedCall(1500, () => {
-        this.scene.start('GameOver', { score: this.scoreManager.getScore() });
+        ScoreManager.saveHighScore(this.scoreManager.getScore());
+        this.scene.start('GameOver', {
+          score: this.scoreManager.getScore(),
+          stage: this.waveManager.getCurrentStage() + 1,
+        });
       });
     }
   }
@@ -229,12 +323,10 @@ export class GameScene extends Phaser.Scene {
     this.events.emit('updateScore', total);
     this.events.emit('scorePop', x, y, points);
 
-    // Extra life at score thresholds
     if (total >= this.nextLifeAt) {
       this.player.lives++;
       this.events.emit('updateLives', this.player.lives);
       this.nextLifeAt += EXTRA_LIFE_SCORE;
-      // Flash screen green for extra life
       this.cameras.main.flash(200, 0, 255, 0);
     }
   }
@@ -248,6 +340,125 @@ export class GameScene extends Phaser.Scene {
     this.sound.play('sfx-hit', { volume: 0.2 });
   }
 
+  // ── Boss ──
+
+  spawnBoss(stageIndex) {
+    const stageConfig = STAGES[stageIndex];
+    this.events.emit('announceBoss');
+
+    this.time.delayedCall(2000, () => {
+      this.boss = new Boss(this, stageConfig);
+      this.setupBossCollisions();
+      this.events.emit('showBossHP');
+    });
+  }
+
+  cleanupBoss() {
+    if (this.bossOverlap) this.physics.world.removeCollider(this.bossOverlap);
+    if (this.bossBulletOverlap) this.physics.world.removeCollider(this.bossBulletOverlap);
+    if (this.bossRayOverlap) this.physics.world.removeCollider(this.bossRayOverlap);
+    if (this.boss) {
+      this.boss.destroy();
+      this.boss = null;
+    }
+    this.events.emit('hideBossHP');
+  }
+
+  // ── Stage transitions ──
+
+  showStageClear(clearedStage) {
+    this.cleanupBoss();
+
+    const stageName = STAGES[clearedStage].name;
+    const bonus = STAGES[clearedStage].clearBonus;
+
+    // "STAGE CLEAR" overlay
+    const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.5);
+    overlay.setDepth(50);
+
+    const clearText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 3, `${stageName} CLEAR!`, {
+      fontFamily: 'monospace',
+      fontSize: '36px',
+      color: '#00ff00',
+      fontStyle: 'bold',
+      stroke: '#003300',
+      strokeThickness: 4,
+    }).setOrigin(0.5).setDepth(51);
+
+    const bonusText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, `Bonus: +${bonus}`, {
+      fontFamily: 'monospace',
+      fontSize: '24px',
+      color: '#ffff00',
+      stroke: '#000000',
+      strokeThickness: 3,
+    }).setOrigin(0.5).setDepth(51);
+
+    this.time.delayedCall(3000, () => {
+      overlay.destroy();
+      clearText.destroy();
+      bonusText.destroy();
+
+      // Swap backgrounds for next stage
+      const nextStage = STAGES[this.waveManager.getCurrentStage()];
+      if (nextStage) {
+        this.bgBack.setTexture(nextStage.bgBack);
+        this.bgStars.setTexture(nextStage.bgStars);
+      }
+
+      this.waveManager.startNextStage();
+    });
+  }
+
+  showVictory() {
+    this.cleanupBoss();
+
+    ScoreManager.saveHighScore(this.scoreManager.getScore());
+
+    const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.6);
+    overlay.setDepth(50);
+
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 3, 'VICTORY!', {
+      fontFamily: 'monospace',
+      fontSize: '48px',
+      color: '#ffdd00',
+      fontStyle: 'bold',
+      stroke: '#ff6600',
+      strokeThickness: 5,
+    }).setOrigin(0.5).setDepth(51);
+
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, `Final Score: ${this.scoreManager.getScore()}`, {
+      fontFamily: 'monospace',
+      fontSize: '28px',
+      color: '#ffffff',
+      stroke: '#000000',
+      strokeThickness: 3,
+    }).setOrigin(0.5).setDepth(51);
+
+    const prompt = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 80, 'Press SPACE to Continue', {
+      fontFamily: 'monospace',
+      fontSize: '18px',
+      color: '#aaaaaa',
+    }).setOrigin(0.5).setDepth(51);
+
+    this.tweens.add({
+      targets: prompt,
+      alpha: 0.2,
+      duration: 600,
+      yoyo: true,
+      repeat: -1,
+    });
+
+    this.time.delayedCall(1000, () => {
+      this.input.keyboard.once('keydown-SPACE', () => {
+        this.scene.start('GameOver', {
+          score: this.scoreManager.getScore(),
+          stage: STAGES.length,
+          victory: true,
+        });
+      });
+    });
+  }
+
   update(time, delta) {
     // Parallax scrolling
     this.bgBack.tilePositionY -= BG_SPEED_BACK;
@@ -259,5 +470,9 @@ export class GameScene extends Phaser.Scene {
     this.asteroidManager.update();
     this.powerUpManager.update(time);
 
+    // Update boss
+    if (this.boss && this.boss.alive) {
+      this.boss.update(time);
+    }
   }
 }

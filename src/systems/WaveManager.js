@@ -1,34 +1,44 @@
 import Phaser from 'phaser';
-import { WAVES } from '../config/waves.js';
-import { GAME_WIDTH, ENEMY_TYPES } from '../config/constants.js';
+import { STAGE_WAVES } from '../config/waves.js';
+import { GAME_WIDTH, ENEMY_TYPES, STAGES } from '../config/constants.js';
 
-const STATE = { WAITING: 0, SPAWNING: 1, ACTIVE: 2, CLEARED: 3 };
+const STATE = { WAITING: 0, SPAWNING: 1, ACTIVE: 2, CLEARED: 3, BOSS: 4 };
 
 export class WaveManager {
   constructor(scene) {
     this.scene = scene;
-    this.currentWave = 0;
+    this.currentStage = 0;
+    this.currentWaveInStage = 0;
+    this.globalWave = 0;
     this.state = STATE.WAITING;
     this.spawnQueue = [];
-    this.spawnTimer = null;
     this.enemiesAlive = 0;
     this.events = new Phaser.Events.EventEmitter();
   }
 
   start() {
-    this.currentWave = 0;
+    this.currentStage = 0;
+    this.currentWaveInStage = 0;
+    this.globalWave = 0;
+    this.events.emit('stageStart', this.currentStage);
     this.startWave();
   }
 
   startWave() {
-    if (this.currentWave >= WAVES.length) {
-      // Loop waves with increased difficulty
-      this.currentWave = 0;
+    const stageWaves = STAGE_WAVES[this.currentStage];
+    if (!stageWaves) return; // game complete
+
+    if (this.currentWaveInStage >= stageWaves.length) {
+      // All waves in stage cleared — trigger boss
+      this.state = STATE.BOSS;
+      this.events.emit('bossStart', this.currentStage);
+      return;
     }
 
-    const waveDef = WAVES[this.currentWave];
+    const waveDef = stageWaves[this.currentWaveInStage];
     this.state = STATE.WAITING;
-    this.events.emit('waveStart', this.currentWave + 1);
+    this.globalWave++;
+    this.events.emit('waveStart', this.globalWave);
 
     // 2-second pause before spawning
     this.scene.time.delayedCall(2000, () => {
@@ -40,6 +50,7 @@ export class WaveManager {
   }
 
   buildSpawnQueue(waveDef) {
+    const diffMult = STAGES[this.currentStage]?.difficultyMult || 1;
     this.spawnQueue = [];
     for (const group of waveDef.enemies) {
       const typeConfig = ENEMY_TYPES[group.type];
@@ -47,15 +58,19 @@ export class WaveManager {
 
       const positions = this.getFormationPositions(group.formation, group.count);
       for (let i = 0; i < group.count; i++) {
+        // Scale enemy stats by difficulty multiplier
+        const scaled = { ...typeConfig };
+        scaled.hp = Math.ceil(scaled.hp * diffMult);
+        scaled.speed = Math.round(scaled.speed * (0.8 + diffMult * 0.2));
+
         this.spawnQueue.push({
-          typeConfig: { ...typeConfig },
+          typeConfig: scaled,
           typeName: group.type,
           x: positions[i].x,
           delay: group.delay * i,
         });
       }
     }
-    // Sort by delay so they spawn in order
     this.spawnQueue.sort((a, b) => a.delay - b.delay);
   }
 
@@ -78,7 +93,6 @@ export class WaveManager {
           const row = Math.floor(i / 2);
           positions.push({ x: cx + side * (row + 1) * 40 });
         }
-        // Leader in center
         if (count > 0) positions[0].x = cx;
         break;
       }
@@ -119,18 +133,11 @@ export class WaveManager {
       });
     }
 
-    // After all spawned, switch to active
     const maxDelay = this.spawnQueue[this.spawnQueue.length - 1].delay;
     this.scene.time.delayedCall(maxDelay + 500, () => {
       this.state = STATE.ACTIVE;
-      // If all enemies already dead/offscreen, advance immediately
       if (this.enemiesAlive <= 0) {
-        this.state = STATE.CLEARED;
-        this.events.emit('waveEnd', this.currentWave + 1);
-        this.currentWave++;
-        this.scene.time.delayedCall(1500, () => {
-          this.startWave();
-        });
+        this.waveCleared();
       }
     });
 
@@ -148,18 +155,43 @@ export class WaveManager {
   onEnemyKilled() {
     this.enemiesAlive = Math.max(0, this.enemiesAlive - 1);
     if (this.state === STATE.ACTIVE && this.enemiesAlive <= 0) {
-      this.state = STATE.CLEARED;
-      this.events.emit('waveEnd', this.currentWave + 1);
-      this.currentWave++;
-
-      // Brief delay then start next wave
-      this.scene.time.delayedCall(1500, () => {
-        this.startWave();
-      });
+      this.waveCleared();
     }
   }
 
+  waveCleared() {
+    this.state = STATE.CLEARED;
+    this.events.emit('waveEnd', this.globalWave);
+    this.currentWaveInStage++;
+
+    this.scene.time.delayedCall(1500, () => {
+      this.startWave();
+    });
+  }
+
+  onBossDefeated() {
+    this.currentStage++;
+    this.currentWaveInStage = 0;
+
+    if (this.currentStage >= STAGES.length) {
+      // Game complete — victory!
+      this.events.emit('victory');
+    } else {
+      // Stage clear — transition to next stage
+      this.events.emit('stageClear', this.currentStage - 1);
+    }
+  }
+
+  startNextStage() {
+    this.events.emit('stageStart', this.currentStage);
+    this.startWave();
+  }
+
   getCurrentWave() {
-    return this.currentWave + 1;
+    return this.globalWave;
+  }
+
+  getCurrentStage() {
+    return this.currentStage;
   }
 }
