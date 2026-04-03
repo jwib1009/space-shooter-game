@@ -168,16 +168,16 @@ All paths relative to `Legacy Collection/Assets/`.
 Open in browser → Title screen → Press start → Fly ship, shoot enemies & asteroids, see score increase, die, see game over screen with score, restart.
 
 ### Verification
-- [ ] `npm install && npm start` launches game in browser
-- [ ] Player moves with keyboard, stays in bounds
-- [ ] Bullets fire on spacebar/click, destroy enemies
-- [ ] Enemies fly in, shoot projectiles at player
-- [ ] Asteroids drift, can be destroyed
-- [ ] Explosions play on destruction
-- [ ] Score increments correctly
-- [ ] Player death triggers game over screen
-- [ ] Sound effects play for shots, hits, explosions
-- [ ] Background scrolls with parallax effect
+- [x] `npm install && npm start` launches game in browser
+- [x] Player moves with keyboard, stays in bounds
+- [x] Bullets fire on spacebar/click, destroy enemies
+- [x] Enemies fly in, shoot projectiles at player
+- [x] Asteroids drift, can be destroyed
+- [x] Explosions play on destruction
+- [x] Score increments correctly
+- [x] Player death triggers game over screen
+- [x] Sound effects play for shots, hits, explosions
+- [x] Background scrolls with parallax effect
 
 ---
 
@@ -216,17 +216,17 @@ Open in browser → Title screen → Press start → Fly ship, shoot enemies & a
 Launch → Start game → Survive waves of increasingly varied enemies → Collect power-ups to change weapons → Shield absorbs hits → Lose all 3 lives → Game over with final score.
 
 ### Verification
-- [ ] Waves spawn sequentially with increasing difficulty
-- [ ] At least 3 different enemy formations appear
-- [ ] All 7+ enemy types appear across waves
-- [ ] Power-ups drop from destroyed enemies
-- [ ] Collecting spread shot gives 3-way fire
-- [ ] Collecting laser gives piercing projectile
-- [ ] Shield visually wraps player and absorbs damage
-- [ ] Gems/bonus give score boost
-- [ ] Lives display in HUD, decrement on death
-- [ ] Respawn with brief invincibility flashing
-- [ ] Wave counter advances in HUD
+- [x] Waves spawn sequentially with increasing difficulty
+- [x] At least 3 different enemy formations appear
+- [x] All 7+ enemy types appear across waves
+- [x] Power-ups drop from destroyed enemies
+- [x] Collecting spread shot gives 3-way fire
+- [x] Collecting laser gives piercing projectile
+- [x] Shield visually wraps player and absorbs damage
+- [x] Gems/bonus give score boost
+- [x] Lives display in HUD, decrement on death
+- [x] Respawn with brief invincibility flashing
+- [x] Wave counter advances in HUD
 
 ---
 
@@ -266,15 +266,15 @@ Launch → Start game → Survive waves of increasingly varied enemies → Colle
 Launch → Select ship → Play through Stage 1 waves → Defeat Stage 1 boss → "Stage Clear" → Stage 2 with new background → ... → Stage 3 boss → Victory screen → High score table saved to localStorage.
 
 ### Verification
-- [ ] Ship selection works on menu with 4+ ship options
-- [ ] 3 distinct stage backgrounds with parallax scrolling
-- [ ] Boss appears after final wave of each stage
-- [ ] Boss has visible health bar that depletes
-- [ ] Boss cycles through attack phases
-- [ ] Boss defeat triggers large explosion sequence
-- [ ] "Stage Clear" screen shows between stages
-- [ ] Screen shake on big explosions
-- [ ] High scores persist across browser sessions (localStorage)
-- [ ] Top 10 scores displayed on menu/game over
-- [ ] Victory screen after defeating final boss
-- [ ] Full game is completable start to finish
+- [x] Ship selection works on menu with 4+ ship options
+- [x] 3 distinct stage backgrounds with parallax scrolling
+- [x] Boss appears after final wave of each stage
+- [x] Boss has visible health bar that depletes
+- [x] Boss cycles through attack phases
+- [x] Boss defeat triggers large explosion sequence
+- [x] "Stage Clear" screen shows between stages
+- [x] Screen shake on big explosions
+- [x] High scores persist across browser sessions (localStorage)
+- [x] Top 10 scores displayed on menu/game over
+- [x] Victory screen after defeating final boss
+- [x] Full game is completable start to finish

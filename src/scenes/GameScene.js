@@ -74,6 +74,7 @@ export class GameScene extends Phaser.Scene {
       this.showVictory();
     });
 
+    this.events.off('bossDefeated');
     this.events.on('bossDefeated', () => {
       const stageConfig = STAGES[this.waveManager.getCurrentStage()];
       if (stageConfig) {
@@ -404,8 +405,12 @@ export class GameScene extends Phaser.Scene {
       // Swap backgrounds for next stage
       const nextStage = STAGES[this.waveManager.getCurrentStage()];
       if (nextStage) {
-        this.bgBack.setTexture(nextStage.bgBack);
-        this.bgStars.setTexture(nextStage.bgStars);
+        this.bgBack.destroy();
+        this.bgStars.destroy();
+        this.bgBack = this.add.tileSprite(0, 0, GAME_WIDTH, GAME_HEIGHT, nextStage.bgBack)
+          .setOrigin(0, 0).setScale(this.bgScale).setDepth(0);
+        this.bgStars = this.add.tileSprite(0, 0, GAME_WIDTH, GAME_HEIGHT, nextStage.bgStars)
+          .setOrigin(0, 0).setScale(this.bgScale).setDepth(1);
       }
 
       this.waveManager.startNextStage();

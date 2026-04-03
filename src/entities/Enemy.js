@@ -29,7 +29,7 @@ export class EnemyManager {
     enemy._pendingKill = false;
     enemy.clearTint();
     enemy.setScale(PIXEL_SCALE);
-    enemy.setAngle(typeConfig.angle || -90);
+    enemy.setAngle(typeConfig.angle != null ? typeConfig.angle : -90);
     enemy.setDepth(5);
 
     // Animated enemies
