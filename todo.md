@@ -225,16 +225,16 @@
 # Milestone 2 — Waves, Power-ups & Lives
 
 ## 14. Wave Manager (WaveManager.js)
-- [ ] Create `src/systems/WaveManager.js`
-- [ ] Define wave data structure in `src/config/waves.js`:
+- [x] Create `src/systems/WaveManager.js`
+- [x] Define wave data structure in `src/config/waves.js`:
   ```
   { wave: 1, enemies: [{ type, count, formation, delay }], asteroids: count }
   ```
-- [ ] Implement wave sequencing: spawn all enemies in a wave → wait until all defeated → start next wave
-- [ ] Track current wave number
-- [ ] Increase difficulty per wave: more enemies, faster speeds, shorter delays
-- [ ] Add brief pause (2-3 seconds) between waves with "Wave X" text flash
-- [ ] Emit events when wave starts/ends for HUD updates
+- [x] Implement wave sequencing: spawn all enemies in a wave → wait until all defeated → start next wave
+- [x] Track current wave number
+- [x] Increase difficulty per wave: more enemies, faster speeds, shorter delays
+- [x] Add brief pause (2-3 seconds) between waves with "Wave X" text flash
+- [x] Emit events when wave starts/ends for HUD updates
 
 ### What you'll learn
 - **State machines** — WaveManager cycles through states: `WAITING → SPAWNING → ACTIVE → CLEARED`. Most game systems are state machines under the hood
@@ -245,12 +245,12 @@
 ---
 
 ## 15. Enemy Formations
-- [ ] Implement **Line formation** — enemies spawn in a horizontal row, descend together
-- [ ] Implement **V-shape formation** — enemies in a V pattern, leader in front
-- [ ] Implement **Circle formation** — enemies orbit a center point while descending
-- [ ] Implement **Staggered formation** — enemies spawn in offset rows, creating a grid
+- [x] Implement **Line formation** — enemies spawn in a horizontal row, descend together
+- [x] Implement **V-shape formation** — enemies in a V pattern, leader in front
+- [x] Implement **Circle formation** — enemies orbit a center point while descending
+- [x] Implement **Staggered formation** — enemies spawn in offset rows, creating a grid
 - [ ] Each formation has entry path (fly in from top) and combat pattern (once in position)
-- [ ] Formations defined per-wave in `waves.js` config
+- [x] Formations defined per-wave in `waves.js` config
 
 ### What you'll learn
 - **Parametric curves** for formations: V-shape is offset from leader `(leaderX + i * spacing * direction, leaderY + i * rowOffset)`
@@ -261,9 +261,9 @@
 ---
 
 ## 16. New Enemy Types
-- [ ] Load new enemy spritesheets in BootScene (animated top-down enemies, small/medium/big, alien)
-- [ ] Create animation configs for each new type (frame count, frame rate differ per spritesheet)
-- [ ] Define enemy type configs in constants:
+- [x] Load new enemy spritesheets in BootScene (animated top-down enemies, small/medium/big, alien)
+- [x] Create animation configs for each new type (frame count, frame rate differ per spritesheet)
+- [x] Define enemy type configs in constants:
   ```
   ENEMY_TYPES = {
     scout:    { sprite, hp: 1, speed: fast,   score: 100, fireRate: low },
@@ -275,8 +275,8 @@
     alien:    { sprite, hp: 2, speed: fast,   score: 350, fireRate: low, pattern: zigzag }
   }
   ```
-- [ ] Update Enemy.js to accept a type config and behave accordingly
-- [ ] Mix enemy types across waves for variety
+- [x] Update Enemy.js to accept a type config and behave accordingly
+- [x] Mix enemy types across waves for variety
 
 ### What you'll learn
 - **Composition over inheritance**: instead of `SmallEnemy extends Enemy`, one Enemy class configured by data
@@ -287,17 +287,17 @@
 ---
 
 ## 17. Weapon System (WeaponSystem.js)
-- [ ] Create `src/systems/WeaponSystem.js`
-- [ ] Define weapon types:
+- [x] Create `src/systems/WeaponSystem.js`
+- [x] Define weapon types:
   - **Basic** — single bullet straight up (default)
   - **Spread** — 3 bullets in a fan pattern (center + 15° left + 15° right)
   - **Laser** — piercing bolt that passes through enemies (doesn't deactivate on hit)
-- [ ] Track current weapon type and upgrade level on the player
-- [ ] Upgrade levels per weapon:
+- [x] Track current weapon type and upgrade level on the player
+- [x] Upgrade levels per weapon:
   - Spread L1: 3-way → L2: 5-way → L3: 7-way
   - Laser L1: single → L2: double (parallel) → L3: triple
-- [ ] Each weapon type uses different bullet sprites (shoot1 for basic, laser-bolts for laser, bolt for spread)
-- [ ] Weapon switch resets upgrade level to 1
+- [x] Each weapon type uses different bullet sprites (shoot1 for basic, laser-bolts for laser, bolt for spread)
+- [x] Weapon switch resets upgrade level to 1
 
 ### What you'll learn
 - **Strategy pattern**: WeaponSystem swaps firing behavior without changing Player code. `weapon.fire()` does different things based on active weapon
@@ -308,18 +308,18 @@
 ---
 
 ## 18. Power-up System (PowerUp.js)
-- [ ] Create `src/entities/PowerUp.js` extending `Phaser.Physics.Arcade.Sprite`
-- [ ] Power-up pool with different types
-- [ ] Spawn power-ups from destroyed enemies (random chance, e.g. 15%)
-- [ ] Power-up types mapped to sprites:
+- [x] Create `src/entities/PowerUp.js` extending `Phaser.Physics.Arcade.Sprite`
+- [x] Power-up pool with different types
+- [x] Spawn power-ups from destroyed enemies (random chance, e.g. 15%)
+- [x] Power-up types mapped to sprites:
   - `power-up1.png` → Spread Shot (orange/red icon)
   - `power-up2.png` → Laser (blue icon)
   - `power-up3.png` → Shield (green icon)
   - `power-up4.png` / gems → Score Bonus (+500 points)
-- [ ] Power-ups drift downward slowly, bob up and down (sine wave on Y)
-- [ ] Player ↔ PowerUp overlap: collect and apply effect
-- [ ] Power-ups deactivate if they leave the screen
-- [ ] Brief flash/sound on collection
+- [x] Power-ups drift downward slowly, bob up and down (sine wave on Y)
+- [x] Player ↔ PowerUp overlap: collect and apply effect
+- [x] Power-ups deactivate if they leave the screen
+- [x] Brief flash/sound on collection
 
 ### What you'll learn
 - **Loot tables**: random drops with weighted probabilities. Not all power-ups should be equally common — shield might be rare (5%), score bonus common (40%)
@@ -329,12 +329,12 @@
 ---
 
 ## 19. Shield Mechanic
-- [ ] When shield power-up collected, activate shield on player
-- [ ] Display `energy-shield.png` spritesheet animation around the player ship
-- [ ] Shield absorbs up to 3 hits before breaking
-- [ ] Visual feedback: shield sprite flashes on hit, changes color/opacity as it weakens
+- [x] When shield power-up collected, activate shield on player
+- [x] Display `energy-shield.png` spritesheet animation around the player ship
+- [x] Shield absorbs up to 3 hits before breaking
+- [x] Visual feedback: shield sprite flashes on hit, changes color/opacity as it weakens
 - [ ] Shield breaks with a visual pop effect
-- [ ] Shield duration: either hit-based (3 hits) or time-based (10 seconds) — hit-based is more strategic
+- [x] Shield duration: either hit-based (3 hits) or time-based (10 seconds) — hit-based is more strategic
 
 ### What you'll learn
 - **Composite sprites**: the shield is a separate sprite that follows the player's position every frame
@@ -345,14 +345,14 @@
 ---
 
 ## 20. Lives System
-- [ ] Player starts with 3 lives
-- [ ] On death: lose 1 life, respawn at bottom-center
-- [ ] Brief invincibility window after respawn (2 seconds)
-- [ ] During invincibility: player sprite blinks (alpha toggle every 100ms)
-- [ ] When invincible, disable player↔enemy and player↔bullet overlaps
-- [ ] Extra life awarded at 10,000 points (with fanfare sound or flash)
-- [ ] At 0 lives: trigger Game Over scene
-- [ ] Lives displayed as ship icons in HUD
+- [x] Player starts with 3 lives
+- [x] On death: lose 1 life, respawn at bottom-center
+- [x] Brief invincibility window after respawn (2 seconds)
+- [x] During invincibility: player sprite blinks (alpha toggle every 100ms)
+- [x] When invincible, disable player↔enemy and player↔bullet overlaps
+- [x] Extra life awarded at 10,000 points (with fanfare sound or flash)
+- [x] At 0 lives: trigger Game Over scene
+- [x] Lives displayed as ship icons in HUD
 
 ### What you'll learn
 - **Invincibility frames (i-frames)** — a universal game design pattern. Without them, players die instantly on respawn if enemies are nearby
@@ -363,13 +363,13 @@
 ---
 
 ## 21. HUD Overlay (HUDScene)
-- [ ] Create `src/scenes/HUDScene.js`
-- [ ] Run as a **parallel scene** on top of GameScene (`this.scene.launch('HUD')`)
-- [ ] Display: Score (top-left), Lives (top-right as ship icons), Wave counter (top-center)
-- [ ] Display current weapon type indicator (bottom-left, small icon)
-- [ ] Update HUD via Phaser events emitted from GameScene
-- [ ] "Wave X" announcement: large text that fades in/out at wave start
-- [ ] Score pop: brief "+100" text at enemy death position, floats up and fades
+- [x] Create `src/scenes/HUDScene.js`
+- [x] Run as a **parallel scene** on top of GameScene (`this.scene.launch('HUD')`)
+- [x] Display: Score (top-left), Lives (top-right as ship icons), Wave counter (top-center)
+- [x] Display current weapon type indicator (bottom-left, small icon)
+- [x] Update HUD via Phaser events emitted from GameScene
+- [x] "Wave X" announcement: large text that fades in/out at wave start
+- [x] Score pop: brief "+100" text at enemy death position, floats up and fades
 
 ### What you'll learn
 - **Parallel scenes** — Phaser can run multiple scenes simultaneously. HUD runs above GameScene, unaffected by game camera
@@ -384,7 +384,7 @@
 - [ ] Use `EnemyDeath/spritesheet.png` for alternate death effect on special enemies
 - [ ] Different explosion sizes for different enemy sizes (scale the sprite)
 - [ ] Bullet trail: faint afterimage or particle trail behind laser bolts
-- [ ] Screen flash (brief white overlay) on large enemy kills
+- [x] Screen flash (brief white overlay) on large enemy kills
 
 ### What you'll learn
 - Spritesheet-based vs. frame-based animations: sheets are more efficient (one draw call), individual frames are easier to manage
@@ -395,11 +395,11 @@
 ---
 
 ## 23. Asteroid Variety
-- [ ] Load 5 asteroid variants from asteroid-fighter pack
+- [x] Load 5 asteroid variants from asteroid-fighter pack
 - [ ] Randomly select variant when spawning
 - [ ] Different asteroid sizes/HP per variant
-- [ ] Vary rotation speed per asteroid for visual diversity
-- [ ] Increase asteroid spawn rate in later waves
+- [x] Vary rotation speed per asteroid for visual diversity
+- [x] Increase asteroid spawn rate in later waves
 
 ### What you'll learn
 - Visual variety from minimal assets: random selection + random rotation speed makes 5 sprites feel like dozens
@@ -426,17 +426,17 @@
 # Milestone 3 — Boss Fights, Stages & Polish
 
 ## 25. Stage System
-- [ ] Define 3 stages in `constants.js`, each with:
+- [x] Define 3 stages in `constants.js`, each with:
   - Background asset keys (parallax layers)
   - Wave definitions (which waves belong to this stage)
   - Difficulty multipliers (enemy speed, fire rate, HP scaling)
   - Boss config
-- [ ] Stage 1: SpaceShooter background (purple/dark) — waves 1-5
-- [ ] Stage 2: Blue space background — waves 6-10
-- [ ] Stage 3: Old parallax background with ring planet — waves 11-15
-- [ ] Load all background sets in BootScene
+- [x] Stage 1: SpaceShooter background (purple/dark) — waves 1-5
+- [x] Stage 2: Blue space background — waves 6-10
+- [x] Stage 3: Old parallax background with ring planet — waves 11-15
+- [x] Load all background sets in BootScene
 - [ ] GameScene reads current stage config to set background layers
-- [ ] After final wave of a stage, trigger boss fight
+- [x] After final wave of a stage, trigger boss fight
 
 ### What you'll learn
 - **Level/stage architecture**: stages are just config objects that parameterize the same GameScene. You don't need 3 separate scenes
@@ -447,8 +447,8 @@
 ---
 
 ## 26. Background Transitions
-- [ ] Load Stage 2 backgrounds: `blue-back.png`, `blue-stars.png`, `prop-planet-big.png`
-- [ ] Load Stage 3 backgrounds: `parallax-space-backgound.png`, `parallax-space-stars.png`, `parallax-space-ring-planet.png`, `parallax-space-far-planets.png`
+- [x] Load Stage 2 backgrounds: `blue-back.png`, `blue-stars.png`, `prop-planet-big.png`
+- [x] Load Stage 3 backgrounds: `parallax-space-backgound.png`, `parallax-space-stars.png`, `parallax-space-ring-planet.png`, `parallax-space-far-planets.png`
 - [ ] On stage transition: crossfade between background sets (old fades out, new fades in)
 - [ ] Different parallax scroll speeds per stage for visual variety
 - [ ] Stage 3 has additional parallax layer (more planet props = more depth)
@@ -461,11 +461,11 @@
 ---
 
 ## 27. Stage Clear Screen
-- [ ] After boss is defeated, pause gameplay briefly
-- [ ] Display "STAGE CLEAR" text with score bonus (+1000 per stage)
+- [x] After boss is defeated, pause gameplay briefly
+- [x] Display "STAGE CLEAR" text with score bonus (+1000 per stage)
 - [ ] Show stage stats: enemies killed, accuracy %, time taken
-- [ ] Auto-advance to next stage after 3 seconds (or on keypress)
-- [ ] If Stage 3 boss defeated: show Victory screen instead
+- [x] Auto-advance to next stage after 3 seconds (or on keypress)
+- [x] If Stage 3 boss defeated: show Victory screen instead
 
 ### What you'll learn
 - **Pacing through downtime**: constant action causes fatigue. Brief pauses between stages let the player breathe and feel accomplishment
@@ -475,17 +475,17 @@
 ---
 
 ## 28. Boss Entity (Boss.js)
-- [ ] Create `src/entities/Boss.js` extending `Phaser.Physics.Arcade.Sprite`
-- [ ] Load boss assets: body, thrust, bolt, rays, cannons, helmet
-- [ ] Boss is a **composite entity** — multiple sprites layered together:
+- [x] Create `src/entities/Boss.js` extending `Phaser.Physics.Arcade.Sprite`
+- [x] Load boss assets: body, thrust, bolt, rays, cannons, helmet
+- [x] Boss is a **composite entity** — multiple sprites layered together:
   - Main body (animated, 5 frames)
   - Helmet (static, overlaid on body)
   - Left cannon (attached to body left side)
   - Right cannon (attached to body right side)
   - Thrust (animated, behind body, visible during movement)
-- [ ] Boss HP: high value (e.g. 100), with a health bar
-- [ ] Boss entry: flies in slowly from top of screen to its combat position
-- [ ] Boss hitbox covers the main body area only (not rays/effects)
+- [x] Boss HP: high value (e.g. 100), with a health bar
+- [x] Boss entry: flies in slowly from top of screen to its combat position
+- [x] Boss hitbox covers the main body area only (not rays/effects)
 
 ### What you'll learn
 - **Composite entities**: the boss isn't one sprite — it's 5+ sprites moving as a unit. Each child sprite's position is relative to the body: `cannon.x = body.x + offset`
@@ -496,22 +496,22 @@
 ---
 
 ## 29. Boss Attack Phases
-- [ ] **Phase 1** (100%-66% HP) — Cannon barrage:
+- [x] **Phase 1** (100%-66% HP) — Cannon barrage:
   - Boss moves side-to-side slowly
   - Fires bolt projectiles from left and right cannons alternately
   - Bolts aimed at player position (leading shots)
   - Fire rate: moderate (every 800ms)
-- [ ] **Phase 2** (66%-33% HP) — Ray sweep:
+- [x] **Phase 2** (66%-33% HP) — Ray sweep:
   - Boss stops moving, charges up (visual: rays animation plays)
   - Fires wide energy ray beam that sweeps left-to-right (or right-to-left)
   - Ray damages player on contact (large hitbox, must dodge vertically)
   - Between sweeps, fires faster cannon bolts
-- [ ] **Phase 3** (33%-0% HP) — Enraged:
+- [x] **Phase 3** (33%-0% HP) — Enraged:
   - Boss moves faster (erratic side-to-side)
   - Fires spread pattern: 5 bolts in a fan
   - Ray sweeps are faster
   - Cannon fire rate doubles
-- [ ] Phase transitions: brief pause, boss flashes, visual/audio cue
+- [x] Phase transitions: brief pause, boss flashes, visual/audio cue
 
 ### What you'll learn
 - **Phase-based boss design**: each phase introduces a new threat. Players learn phase 1, then must adapt. This is the core of boss fight design
@@ -523,12 +523,12 @@
 ---
 
 ## 30. Boss Health Bar
-- [ ] Create health bar UI at top of screen (full width, red/green bar)
-- [ ] Bar shows boss name/title text above it
-- [ ] Bar depletes smoothly (tweened, not instant) as boss takes damage
-- [ ] Color changes: green (high) → yellow (mid) → red (low)
-- [ ] Bar appears with boss entry, disappears on boss death
-- [ ] Flash bar briefly white when boss takes damage
+- [x] Create health bar UI at top of screen (full width, red/green bar)
+- [x] Bar shows boss name/title text above it
+- [x] Bar depletes smoothly (tweened, not instant) as boss takes damage
+- [x] Color changes: green (high) → yellow (mid) → red (low)
+- [x] Bar appears with boss entry, disappears on boss death
+- [x] Flash bar briefly white when boss takes damage
 
 ### What you'll learn
 - **Custom UI with graphics**: `this.add.graphics()` to draw rectangles — `graphics.fillRect(x, y, width * hpPercent, height)`
@@ -539,13 +539,13 @@
 ---
 
 ## 31. Boss Defeat Sequence
-- [ ] On boss HP reaching 0: freeze boss movement
-- [ ] Play series of small explosions at random positions on the boss body (staggered over 2 seconds)
-- [ ] Final large explosion (9-frame `explosion-animation`) centered on boss
-- [ ] Screen shake during explosion sequence: `this.cameras.main.shake(2000, 0.02)`
-- [ ] Screen flash on final explosion: `this.cameras.main.flash(500)`
-- [ ] Award large score bonus (5000/10000/15000 per stage boss)
-- [ ] Transition to Stage Clear screen
+- [x] On boss HP reaching 0: freeze boss movement
+- [x] Play series of small explosions at random positions on the boss body (staggered over 2 seconds)
+- [x] Final large explosion (9-frame `explosion-animation`) centered on boss
+- [x] Screen shake during explosion sequence: `this.cameras.main.shake(2000, 0.02)`
+- [x] Screen flash on final explosion: `this.cameras.main.flash(500)`
+- [x] Award large score bonus (5000/10000/15000 per stage boss)
+- [x] Transition to Stage Clear screen
 
 ### What you'll learn
 - **Death choreography**: important enemies deserve dramatic deaths. Multiple staggered explosions > one big explosion
@@ -556,13 +556,13 @@
 ---
 
 ## 32. Ship Selection Screen
-- [ ] Add ship selection to MenuScene
-- [ ] Display 4 ship designs from `top-down-shooter-ship` (red variants: ship-01 to ship-04)
-- [ ] Show yellow variant toggle (same ships, different color)
-- [ ] Highlight selected ship with border/glow effect
-- [ ] Arrow keys or click to select, spacebar to confirm
+- [x] Add ship selection to MenuScene
+- [x] Display 4 ship designs from `top-down-shooter-ship` (red variants: ship-01 to ship-04)
+- [x] Show yellow variant toggle (same ships, different color)
+- [x] Highlight selected ship with border/glow effect
+- [x] Arrow keys or click to select, spacebar to confirm
 - [ ] Load corresponding thrust animation for selected ship
-- [ ] Pass selected ship key to GameScene
+- [x] Pass selected ship key to GameScene
 
 ### What you'll learn
 - **Menu UI with sprites**: using game sprites in menus lets players preview what they'll play with
@@ -573,14 +573,14 @@
 ---
 
 ## 33. High Score Persistence (ScoreManager.js update)
-- [ ] Save top 10 scores to `localStorage` as JSON array
-- [ ] Each entry: `{ score: number, date: string, stage: number }`
-- [ ] On game over: check if score qualifies for top 10
-- [ ] If qualified: insert into sorted list, trim to 10 entries
-- [ ] Display high score table on GameOverScene
-- [ ] Display high score table on MenuScene (accessible via "High Scores" option)
-- [ ] Highlight new high score entry with different color
-- [ ] Handle missing/corrupted localStorage gracefully (fallback to empty array)
+- [x] Save top 10 scores to `localStorage` as JSON array
+- [x] Each entry: `{ score: number, date: string, stage: number }`
+- [x] On game over: check if score qualifies for top 10
+- [x] If qualified: insert into sorted list, trim to 10 entries
+- [x] Display high score table on GameOverScene
+- [x] Display high score table on MenuScene (accessible via "High Scores" option)
+- [x] Highlight new high score entry with different color
+- [x] Handle missing/corrupted localStorage gracefully (fallback to empty array)
 
 ### What you'll learn
 - **localStorage API**: `localStorage.setItem('highScores', JSON.stringify(scores))` and `JSON.parse(localStorage.getItem('highScores'))`
@@ -591,11 +591,11 @@
 ---
 
 ## 34. Screen Shake & Juice
-- [ ] Screen shake on any explosion: small shake for enemies, large shake for boss hits
+- [x] Screen shake on any explosion: small shake for enemies, large shake for boss hits
   - `this.cameras.main.shake(duration, intensity)` — 100ms/0.005 for small, 300ms/0.01 for big
-- [ ] Screen flash on player death and boss death
+- [x] Screen flash on player death and boss death
 - [ ] Hit stop (brief 50ms freeze) on significant impacts — pause physics for 1-2 frames
-- [ ] Enemy tint flash red on taking damage: `sprite.setTint(0xff0000)` then reset after 100ms
+- [x] Enemy tint flash red on taking damage: `sprite.setTint(0xff0000)` then reset after 100ms
 - [ ] Score text scales up briefly when increasing: `this.tweens.add({ scaleX: 1.2, scaleY: 1.2, yoyo: true, duration: 100 })`
 
 ### What you'll learn
@@ -621,12 +621,12 @@
 ---
 
 ## 36. Difficulty Scaling Across Stages
-- [ ] Stage 1: baseline difficulty (1.0x multiplier)
-- [ ] Stage 2: 1.3x enemy speed, 1.2x fire rate, 1.5x enemy HP
-- [ ] Stage 3: 1.6x enemy speed, 1.5x fire rate, 2.0x enemy HP
-- [ ] More enemies per wave in later stages
-- [ ] Faster asteroid spawn in later stages
-- [ ] Boss HP and attack speed scale per stage
+- [x] Stage 1: baseline difficulty (1.0x multiplier)
+- [x] Stage 2: 1.3x enemy speed, 1.2x fire rate, 1.5x enemy HP
+- [x] Stage 3: 1.6x enemy speed, 1.5x fire rate, 2.0x enemy HP
+- [x] More enemies per wave in later stages
+- [x] Faster asteroid spawn in later stages
+- [x] Boss HP and attack speed scale per stage
 
 ### What you'll learn
 - **Multiplicative scaling**: one multiplier adjusts everything. `speed = baseSpeed * stageMultiplier` — clean and tunable
